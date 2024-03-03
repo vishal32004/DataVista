@@ -17,23 +17,6 @@
 //   }
 
 import Grid from "@/components/Grid";
-
-//   return (
-//     <Tabs defaultValue="account" className="w-full">
-//       <TabsList className="w-full">
-//         <TabsTrigger value="account">Account</TabsTrigger>
-//         <TabsTrigger value="password">Password</TabsTrigger>
-//       </TabsList>
-//       <TabsContent value="account" className="p-2">
-//         <Grid html={html} />
-//       </TabsContent>
-//       <TabsContent value="password">Change your password here.</TabsContent>
-//     </Tabs>
-//   );
-// };
-
-// export default Home;
-
 const Home = () => {
   return (
     <div>
