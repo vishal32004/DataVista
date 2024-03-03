@@ -16,7 +16,7 @@
 //     console.error("Error executing query:");
 //   }
 
-import Grid from "@/components/Grid";
+import Grid from "@/components/grids/Grid";
 const Home = () => {
   return (
     <div>

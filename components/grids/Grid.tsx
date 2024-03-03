@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import LineChart from "./charts/LineChart";
-import StackedAreaChart from "./charts/StackedAreaChart";
-import PieChart from "./charts/PieChart";
-import StackedColumnChart from "./charts/StackedColumnChart";
-import WaterFallChart from "./charts/BubbleChart";
-import BubbleChart from "./charts/BubbleChart";
+import LineChart from "../charts/LineChart";
+import StackedAreaChart from "../charts/StackedAreaChart";
+import PieChart from "../charts/PieChart";
+import StackedColumnChart from "../charts/StackedColumnChart";
+import WaterFallChart from "../charts/BubbleChart";
+import BubbleChart from "../charts/BubbleChart";
 const Grid = () => {
   const [chartsData, setChartsData] = useState("");
   useEffect(() => {}, []);
