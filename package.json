@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^4.29.7",
     "@radix-ui/react-tabs": "^1.0.4",
+    "@types/highcharts": "^7.0.0",
     "axios": "^1.6.7",
     "bootstrap": "^5.3.3",
     "class-variance-authority": "^0.7.0",
@@ -18,7 +19,7 @@
     "highcharts": "^11.3.0",
     "highcharts-react-official": "^3.2.1",
     "lucide-react": "^0.336.0",
-    "next": "14.1.0",
+    "next": "^14.1.1",
     "pg": "^8.11.3",
     "react": "^18",
     "react-dom": "^18",
