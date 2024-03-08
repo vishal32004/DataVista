@@ -1,6 +1,6 @@
 // "use client"
 import LineChart from "../charts/LineChart";
-import StackedAreaChart from "../charts/StackedAreaChart";
+// import StackedAreaChart from "../charts/StackedAreaChart";
 // import PieChart from "../charts/PieChart";
 // import StackedColumnChart from "../charts/StackedColumnChart";
 
@@ -15,7 +15,7 @@ const Grid = () => {
       </div>
       <div className="row">
         <div className="col-4">
-          <StackedAreaChart />
+          {/* <StackedAreaChart /> */}
         </div>
         <div className="col-4">{/* <PieChart /> */}</div>
         <div className="col-4">{/* <StackedColumnChart /> */}</div>
