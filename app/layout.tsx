@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import 'bootstrap/dist/css/bootstrap.min.css'
+import "bootstrap/dist/css/bootstrap.min.css";
+import Sidebar from "@/components/sidebar";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +22,23 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body
+          className={cn(inter.className, "bg-white dark:bg-[#313338] h-screen")}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            storageKey="discord-theme"
+          >
+            <div className="h-full">
+              <div className="hidden md:flex flex-4 w-[72px] z-30 flex-col fixed inset-y-0">
+                <Sidebar />
+              </div>
+              <main className="md:pl-[72px] h-full">{children}</main>
+            </div>
+          </ThemeProvider>
+        </body>
       </html>
     </ClerkProvider>
   );
