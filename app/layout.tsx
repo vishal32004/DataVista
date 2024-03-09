@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "@/components/sidebar";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { cn } from "@/lib/utils";
+import { ModalProvider } from "@/providers/modal-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Poppins({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
           className={cn(inter.className, "bg-white dark:bg-[#313338] h-screen")}
         >
@@ -31,6 +32,7 @@ export default function RootLayout({
             enableSystem={false}
             storageKey="discord-theme"
           >
+            <ModalProvider />
             <div className="h-full">
               <div className="hidden md:flex flex-4 w-[72px] z-30 flex-col fixed inset-y-0">
                 <Sidebar />
