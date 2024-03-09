@@ -8,7 +8,7 @@ export const Action = () => {
 
   return (
     <div>
-      <HoverTooltip side="right" align="center" label="Add a server">
+      <HoverTooltip side="right" align="center" label="Add a Tab">
         <button
           //   onClick={() => onOpen("createServer")}
           className="group flex items-center"
