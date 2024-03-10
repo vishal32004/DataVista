@@ -1,12 +1,18 @@
 import ChartCard from "../ChartCard";
-import LineChart from "../charts/LineChart";
 const Grid = () => {
   return (
     <div className="h-screen">
       <div className="row h-2/3">
-        <ChartCard>
-          {/* <LineChart /> */}
-        </ChartCard>
+        <ChartCard></ChartCard>
+      </div>
+      <div className="row h-2/3">
+        <ChartCard></ChartCard>
+      </div>
+      <div className="row h-2/3">
+        <ChartCard></ChartCard>
+      </div>
+      <div className="row h-2/3">
+        <ChartCard></ChartCard>
       </div>
     </div>
   );
