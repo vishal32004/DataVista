@@ -21,7 +21,7 @@ import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import axios from "axios";
 import HighchartsUtility from "./utility/highCharts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -41,43 +41,75 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { lineChartJson } from "@/helpers/lineChart";
-import { ChartDataStructure } from "@/types";
-interface ChartData {
-  title: string;
-  options: {};
+import { CreateChart } from "@/helpers/createChart";
+interface Page {
+  id: number;
+  pagename: string;
 }
 const formSchema = z.object({
   chartTitle: z.string().min(2).max(50),
   chartType: z.string(),
   chartPage: z.string(),
 });
-const ChartCard = ({ data }: { data?: ChartData }) => {
+const ChartCard = ({ chartKey }: { chartKey: string }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [options, setOptions] = useState();
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [options, setOptions] = useState<{}>();
+  const [pageNames, setPageNames] = useState<Page[]>([]);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/api/charts/${chartKey}`);
+        if (response.data) {
+          const parsedData = response.data;
+          setOptions(parsedData.options);
+        }
+      } catch (error) {
+        console.error("Error fetching chart data:", error);
+      }
+    };
+
+    fetchData();
+  }, [chartKey]);
+
+  useEffect(() => {
+    const fetchPageNames = async () => {
+      try {
+        const response = await axios.get("/api/page");
+        if (response.data) {
+          setPageNames(response.data);
+          console.log(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching page names:", error);
+      }
+    };
+
+    fetchPageNames();
+  }, []);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       console.log(values);
       const res = await axios.get("/api/getData");
-
-      switch (values.chartType) {
-        case "line":
-          const options = lineChartJson(res.data);
-          //@ts-ignore
-          setOptions(options);
-          setIsDrawerOpen((el) => !el);
-        default:
-          break;
-      }
-
+      const options = CreateChart(res.data, {
+        chartTitle: values.chartTitle,
+        chartType: values.chartType,
+        chartPage: values.chartPage,
+        xAxisLabel: "X-Axis",
+        yAxisLabel: "Y-Axis",
+        xValueKey: "year",
+        yValueKeys: ["total_covid", "total_lung_cancer"],
+      });
+      setOptions(options);
+      setIsDrawerOpen((el) => !el);
       console.log(res.data);
     } catch (error) {
       console.log(error);
@@ -88,14 +120,16 @@ const ChartCard = ({ data }: { data?: ChartData }) => {
     <>
       <Card className="bg-white">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle></CardTitle>
           <Button variant={"ghost"} onClick={toggleDrawer}>
             <Plus />
           </Button>
         </CardHeader>
         <CardContent>
-          {options && <HighchartsUtility options={options} />}
-          {/* {!options && <p>Create A chart</p>} */}
+          {options ? (
+            <HighchartsUtility options={options} />
+          ) : (
+            <p>Create A chart</p>
+          )}
         </CardContent>
       </Card>
 
@@ -117,7 +151,6 @@ const ChartCard = ({ data }: { data?: ChartData }) => {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          // disabled={isLoading}
                           className="dark:bg-[#1e1f22] bg-[#e6e6e9] dark:text-white border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
                           placeholder="Enter Chart Title"
                           {...field}
@@ -175,22 +208,32 @@ const ChartCard = ({ data }: { data?: ChartData }) => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="dark:bg-[#1e1f22]">
-                          <SelectItem value={"Disease"} className="capitalize">
-                            Disease
-                          </SelectItem>
+                          {pageNames.map((pageName) => (
+                            <SelectItem
+                              key={pageName.id}
+                              value={pageName.pagename}
+                              className="capitalize"
+                            >
+                              {pageName.pagename}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button>Submit</Button>
+                <Button className="w-full">Submit</Button>
               </div>
             </form>
           </Form>
           <DrawerFooter>
             <DrawerClose>
-              <Button variant="outline" onClick={toggleDrawer}>
+              <Button
+                variant="outline"
+                onClick={toggleDrawer}
+                className="w-full"
+              >
                 Cancel
               </Button>
             </DrawerClose>
