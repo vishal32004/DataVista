@@ -1,4 +1,5 @@
 "use client";
+import qs from "query-string";
 import {
   Card,
   CardContent,
@@ -42,6 +43,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CreateChart } from "@/helpers/createChart";
+import { MultiSelect } from "react-multi-select-component";
 interface Page {
   id: number;
   pagename: string;
@@ -50,34 +52,50 @@ const formSchema = z.object({
   chartTitle: z.string().min(2).max(50),
   chartType: z.string(),
   chartPage: z.string(),
+  columns: z.array(z.string()),
 });
 const ChartCard = ({ chartKey }: { chartKey: string }) => {
+  const column = [
+    { label: "Grapes 🍇", value: "grapes" },
+    { label: "Mango 🥭", value: "mango" },
+    { label: "Strawberry 🍓", value: "strawberry" },
+    { label: "Watermelon 🍉", value: "watermelon" },
+    { label: "Pear 🍐", value: "pear", disabled: true },
+    { label: "Apple 🍎", value: "apple" },
+    { label: "Tangerine 🍊", value: "tangerine" },
+    { label: "Pineapple 🍍", value: "pineapple" },
+    { label: "Peach 🍑", value: "peach" },
+  ];
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [options, setOptions] = useState<{}>();
   const [pageNames, setPageNames] = useState<Page[]>([]);
+  const [selected, setSelected] = useState([]);
+  const [selectedPage, setSelectedPage] = useState<string>("");
+  const [columns, setColumns] = useState<any[]>([]);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`/api/charts/${chartKey}`);
-        if (response.data) {
-          const parsedData = response.data;
-          setOptions(parsedData.options);
-        }
-      } catch (error) {
-        console.error("Error fetching chart data:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(`/api/charts/${chartKey}`);
+  //       if (response.data) {
+  //         const parsedData = response.data;
+  //         setOptions(parsedData.options);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching chart data:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, [chartKey]);
+  //   fetchData();
+  // }, [chartKey]);
 
   useEffect(() => {
     const fetchPageNames = async () => {
@@ -94,6 +112,32 @@ const ChartCard = ({ chartKey }: { chartKey: string }) => {
 
     fetchPageNames();
   }, []);
+
+  useEffect(() => {
+    const fetchColumnsForPage = async () => {
+      try {
+        const url = qs.stringifyUrl({
+          url: "/api/columns",
+          query: {
+            selectedPage: selectedPage,
+          },
+        });
+      const response = await axios.get(url);
+       
+          console.log(response.data) 
+            setColumns(response.data);
+         
+        
+      } catch (error) {
+        console.error("Error fetching columns for page:", error);
+      }
+    };
+
+    fetchColumnsForPage();
+  }, [selectedPage]);
+  const handlePageChange: (value: string) => void = (value) => {
+    setSelectedPage(value);
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -199,7 +243,7 @@ const ChartCard = ({ chartKey }: { chartKey: string }) => {
                     <FormItem>
                       <FormLabel>Chart Page Name</FormLabel>
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={handlePageChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -219,6 +263,24 @@ const ChartCard = ({ chartKey }: { chartKey: string }) => {
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="columns"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Select Frameworks</FormLabel>
+                      <MultiSelect
+                        options={column}
+                        value={selected}
+                        onChange={setSelected}
+                        labelledBy={"Select"}
+                        isCreatable={true}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
