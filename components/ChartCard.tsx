@@ -43,7 +43,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CreateChart } from "@/helpers/createChart";
-import { MultiSelect } from "react-multi-select-component";
+// import { MultiSelect } from "react-multi-select-component";
+import { MultiSelect } from "@mantine/core";
 interface Page {
   id: number;
   pagename: string;
@@ -55,25 +56,13 @@ const formSchema = z.object({
   columns: z.array(z.string()),
 });
 const ChartCard = ({ chartKey }: { chartKey: string }) => {
-  const column = [
-    { label: "Grapes 🍇", value: "grapes" },
-    { label: "Mango 🥭", value: "mango" },
-    { label: "Strawberry 🍓", value: "strawberry" },
-    { label: "Watermelon 🍉", value: "watermelon" },
-    { label: "Pear 🍐", value: "pear", disabled: true },
-    { label: "Apple 🍎", value: "apple" },
-    { label: "Tangerine 🍊", value: "tangerine" },
-    { label: "Pineapple 🍍", value: "pineapple" },
-    { label: "Peach 🍑", value: "peach" },
-  ];
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [options, setOptions] = useState<{}>();
   const [pageNames, setPageNames] = useState<Page[]>([]);
-  const [selected, setSelected] = useState([]);
+  const [value, setValue] = useState<string[]>([]);
   const [selectedPage, setSelectedPage] = useState<string>("");
   const [columns, setColumns] = useState<any[]>([]);
 
@@ -122,12 +111,15 @@ const ChartCard = ({ chartKey }: { chartKey: string }) => {
             selectedPage: selectedPage,
           },
         });
-      const response = await axios.get(url);
-       
-          console.log(response.data) 
-            setColumns(response.data);
-         
-        
+        const response = await axios.get(url);
+        const formattedColumns = response.data.map(
+          (column: { columnname: string }) => ({
+            label: column.columnname,
+            // value: column.columnname.toLowerCase(),
+          })
+        );
+        console.log(formattedColumns);
+        setColumns(formattedColumns);
       } catch (error) {
         console.error("Error fetching columns for page:", error);
       }
@@ -220,13 +212,25 @@ const ChartCard = ({ chartKey }: { chartKey: string }) => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="dark:bg-[#1e1f22]">
-                          <SelectItem value={"bar"} className="capitalize">
+                          <SelectItem
+                            value={"bar"}
+                            className="capitalize"
+                            key={"bar"}
+                          >
                             Bar
                           </SelectItem>
-                          <SelectItem value={"line"} className="capitalize">
+                          <SelectItem
+                            value={"line"}
+                            className="capitalize"
+                            key={"line"}
+                          >
                             Line
                           </SelectItem>
-                          <SelectItem value={"pie"} className="capitalize">
+                          <SelectItem
+                            value={"pie"}
+                            className="capitalize"
+                            key={"pie"}
+                          >
                             Pie
                           </SelectItem>
                         </SelectContent>
@@ -252,10 +256,10 @@ const ChartCard = ({ chartKey }: { chartKey: string }) => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="dark:bg-[#1e1f22]">
-                          {pageNames.map((pageName) => (
+                          {pageNames.map((pageName, index) => (
                             <SelectItem
-                              key={pageName.id}
-                              value={pageName.pagename}
+                              key={index} // Using index as the key
+                              value={pageName.pagename.toLowerCase()}
                               className="capitalize"
                             >
                               {pageName.pagename}
@@ -275,12 +279,11 @@ const ChartCard = ({ chartKey }: { chartKey: string }) => {
                     <FormItem>
                       <FormLabel>Select Frameworks</FormLabel>
                       <MultiSelect
-                        options={column}
-                        value={selected}
-                        onChange={setSelected}
-                        labelledBy={"Select"}
-                        isCreatable={true}
+                        data={columns}
+                        value={value}
+                        onChange={setValue}
                       />
+
                       <FormMessage />
                     </FormItem>
                   )}
@@ -290,14 +293,11 @@ const ChartCard = ({ chartKey }: { chartKey: string }) => {
             </form>
           </Form>
           <DrawerFooter>
-            <DrawerClose>
-              <Button
-                variant="outline"
-                onClick={toggleDrawer}
-                className="w-full"
-              >
-                Cancel
-              </Button>
+            <DrawerClose
+              onClick={toggleDrawer}
+              className="w-full bg-red-500 text-white p-2 rounded-sm"
+            >
+              Cancel
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>

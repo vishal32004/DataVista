@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 // import { Gei } from "next/font/google";
-import { GeistSans } from 'geist/font/sans';
+import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "@/components/sidebar";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { cn } from "@/lib/utils";
-// import { ModalProvider } from "@/providers/modal-provider";
+import "@mantine/core/styles.css";
+
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 
 const inter = GeistSans;
 
@@ -24,6 +26,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          <ColorSchemeScript />
+        </head>
         <body
           className={cn(inter.className, "bg-white dark:bg-[#313338] h-screen")}
         >
@@ -33,13 +38,14 @@ export default function RootLayout({
             enableSystem={false}
             storageKey="discord-theme"
           >
-            {/* <ModalProvider /> */}
-            <div className="h-full">
-              <div className="hidden md:flex flex-4 w-[72px] z-30 flex-col fixed inset-y-0">
-                <Sidebar />
+            <MantineProvider>
+              <div className="h-full">
+                <div className="hidden md:flex flex-4 w-[72px] z-30 flex-col fixed inset-y-0">
+                  <Sidebar />
+                </div>
+                <main className="md:pl-[72px] h-full">{children}</main>
               </div>
-              <main className="md:pl-[72px] h-full">{children}</main>
-            </div>
+            </MantineProvider>
           </ThemeProvider>
         </body>
       </html>
