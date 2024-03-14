@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,14 +15,10 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Form, FormField, FormItem, FormLabel } from "./ui/form";
+import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Plus } from "lucide-react";
 import { Input } from "./ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-interface Page {
-  id: number;
-  pagename: string;
-}
 
 const formSchema = z.object({
   chartTitle: z.string().min(2).max(50),
@@ -32,7 +28,6 @@ const formSchema = z.object({
 const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [options, setOptions] = useState<Record<string, any>>({});
-  const [selectedPage, setSelectedPage] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,10 +36,6 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
-
-  const handlePageChange = useCallback((value: string) => {
-    setSelectedPage(value);
-  }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
