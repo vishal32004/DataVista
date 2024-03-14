@@ -1,7 +1,6 @@
 type ChartValues<X extends string, Y extends string> = {
     chartTitle: string;
     chartType: string;
-    chartPage: string;
     xAxisLabel: string;
     yAxisLabel: string;
     xValueKey: X;
