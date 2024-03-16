@@ -13,10 +13,13 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
     values: ChartValues<X, Y, Prefix>
 ) => {
     const xValues = data.map((entry) => entry[values.xValueKey]);
-    const seriesData = values.yValueKeys.map((key) => ({
-        name: key.replace(values.prefix, "").replace("_", " ").toUpperCase(),
-        data: data.map((entry) => parseInt(entry[key].toString())),
-    }));
+    const seriesData = values.yValueKeys.map((key) => {
+       const newKey =  values.prefix + '_' + key
+        return {
+            name: key.replace(values.prefix, "").replace("_", " ").toUpperCase(),
+            data: data.map((entry) => parseInt(entry[newKey].toString())),
+        };
+    });
 
     const options = {
         chart: {
