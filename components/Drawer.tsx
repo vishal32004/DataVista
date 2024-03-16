@@ -49,6 +49,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
   const [value, setValue] = useState<ComboboxItem | null>(null);
   const [pages, setPages] = useState<Page[]>([]);
   const [selectedPage, setSelectedPage] = useState<string | null>("");
+  // const [prefix, setprefix] = useState<string>('')
   const [colummn, setColummn] = useState<
     [
       {
@@ -63,8 +64,17 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
     },
   ]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values, "test here");
     try {
-      const res = await axios.get("/api/getData");
+      const res = await axios.get("/api/getData", {
+        params: {
+          prefix: values.prefix,
+          tableName: values.pages,
+          columns: JSON.stringify(values.columns),
+        },
+      });
+
+      console.log(res.data);
       const options = CreateChart(res.data, {
         chartTitle: values.chartTitle,
         chartType: values.chartType,
@@ -72,7 +82,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         yAxisLabel: values.chartYAxis,
         xValueKey: "year",
         yValueKeys: values.columns,
-        prefix: values.prefix,
+        prefix: values.prefix.toLowerCase(),
       });
       setOptions(options);
     } catch (error) {
@@ -116,7 +126,10 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
             label:
               column.columnname.charAt(0).toUpperCase() +
               column.columnname.slice(1),
-            value: column.columnname.toLowerCase(),
+            value: column.columnname
+              .toLowerCase()
+              .replace(/\s+/g, "_")
+              .replace(/\//g, "_"),
           })
         );
         console.log(formattedColumns);
@@ -258,9 +271,8 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                   <FormLabel>Prefix</FormLabel>
                   <Select
                     data={[
-                      { value: "total", label: "Total" },
-                      // { value: "line", label: "Line" },
-                      // { value: "pie", label: "Pie" },
+                      { value: "SUM", label: "Total" },
+                      { value: "AVG", label: "Average" },
                     ]}
                     value={field.value}
                     onChange={field.onChange}
