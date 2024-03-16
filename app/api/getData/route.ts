@@ -2,17 +2,22 @@ import { pool } from "@/lib/db-config";
 import { NextResponse } from "next/server";
 
 export const GET = async (req: Request, res: NextResponse) => {
+  const { searchParams } = new URL(req.url);
+  const tableName = searchParams.get("tableName");
+  const prefix = searchParams.get("prefix");
+  const columns = JSON.parse(searchParams.get("columns") ?? "[]");
+
+  if (!tableName || !prefix || !columns || !Array.isArray(columns)) {
+    return new NextResponse("Invalid parameters", { status: 400 });
+  }
+
   try {
+    const columnAliases = columns.map(column => `${prefix}("${column}") as ${prefix}_${column}`).join(", ");
     const result = await pool.query(`
       SELECT 
         year,
-        SUM(covid) as total_covid,
-        SUM("Lung Cancer") as total_lung_cancer,
-        SUM(Tuberculosis) as total_tuberculosis,
-        SUM("HIV/AIDS") as total_hiv_aids,
-        SUM("Heart Failure") as total_heart_failure,
-        SUM(Stroke) as total_stroke
-      FROM Disease
+        ${columnAliases}
+      FROM ${tableName}
       GROUP BY year
       ORDER BY year;
     `);
