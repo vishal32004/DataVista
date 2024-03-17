@@ -31,6 +31,7 @@ interface DrawerCreateChartProps {
   open: boolean;
   setOptions: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   toggleDrawer: () => void;
+  chartKey: string;
 }
 type Page = {
   value: string;
@@ -40,16 +41,14 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
   open,
   setOptions,
   toggleDrawer,
+  chartKey,
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const [opened, { close }] = useDisclosure();
-  const [value, setValue] = useState<ComboboxItem | null>(null);
   const [pages, setPages] = useState<Page[]>([]);
   const [selectedPage, setSelectedPage] = useState<string | null>("");
-  // const [prefix, setprefix] = useState<string>('')
   const [colummn, setColummn] = useState<
     [
       {
@@ -84,7 +83,9 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         yValueKeys: values.columns,
         prefix: values.prefix.toLowerCase(),
       });
+      saveChart(options)
       setOptions(options);
+      toggleDrawer();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -112,36 +113,50 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
   }, []);
 
   useEffect(() => {
-    const fetchColumnsForPage = async () => {
-      try {
-        const url = qs.stringifyUrl({
-          url: "/api/columns",
-          query: {
-            selectedPage: selectedPage,
-          },
-        });
-        const response = await axios.get(url);
-        const formattedColumns = response.data.map(
-          (column: { columnname: string }) => ({
-            label:
-              column.columnname.charAt(0).toUpperCase() +
-              column.columnname.slice(1),
-            value: column.columnname
-              .toLowerCase()
-              .replace(/\s+/g, "_")
-              .replace(/\//g, "_"),
-          })
-        );
-        console.log(formattedColumns);
-        setColummn(formattedColumns);
-      } catch (error) {
-        console.error("Error fetching columns for page:", error);
-      }
-    };
-
-    fetchColumnsForPage();
+    if (selectedPage) { // Add a condition to check if selectedPage is set
+      const fetchColumnsForPage = async () => {
+        try {
+          const url = qs.stringifyUrl({
+            url: "/api/columns",
+            query: {
+              selectedPage: selectedPage,
+            },
+          });
+          const response = await axios.get(url);
+          const formattedColumns = response.data.map(
+            (column: { columnname: string }) => ({
+              label:
+                column.columnname.charAt(0).toUpperCase() +
+                column.columnname.slice(1),
+              value: column.columnname
+                .toLowerCase()
+                .replace(/\s+/g, "_")
+                .replace(/\//g, "_"),
+            })
+          );
+          console.log(formattedColumns);
+          setColummn(formattedColumns);
+        } catch (error) {
+          console.error("Error fetching columns for page:", error);
+        }
+      };
+  
+      fetchColumnsForPage();
+    }
   }, [selectedPage]);
+  
 
+  const saveChart = async (newJson: Record<string, any>) => {
+    const data = {
+      json: JSON.stringify(newJson),
+      chartKey,
+    };
+    try {
+      const res = await axios.post("/api/charts/saveChart", data);
+    } catch (error) {
+      console.log(error, "error saving the chart");
+    }
+  };
   return (
     <>
       <Drawer
