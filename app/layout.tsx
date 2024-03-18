@@ -4,7 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "@/components/sidebar";
-import { ThemeProvider } from "@/providers/theme-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { cn } from "@/lib/utils";
 import "@mantine/core/styles.css";
 

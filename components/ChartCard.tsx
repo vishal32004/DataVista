@@ -43,7 +43,7 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
             <Plus />
           </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="highcharts-dark">
           {options ? (
             <HighchartsUtility options={options} />
           ) : (

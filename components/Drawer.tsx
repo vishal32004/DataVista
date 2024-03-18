@@ -83,7 +83,8 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         yValueKeys: values.columns,
         prefix: values.prefix.toLowerCase(),
       });
-      saveChart(options)
+      // saveChart(options)
+      console.log(options);
       setOptions(options);
       toggleDrawer();
     } catch (error) {
@@ -113,7 +114,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
   }, []);
 
   useEffect(() => {
-    if (selectedPage) { // Add a condition to check if selectedPage is set
+    if (selectedPage) {
       const fetchColumnsForPage = async () => {
         try {
           const url = qs.stringifyUrl({
@@ -140,23 +141,22 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
           console.error("Error fetching columns for page:", error);
         }
       };
-  
+
       fetchColumnsForPage();
     }
   }, [selectedPage]);
-  
 
-  const saveChart = async (newJson: Record<string, any>) => {
-    const data = {
-      json: JSON.stringify(newJson),
-      chartKey,
-    };
-    try {
-      const res = await axios.post("/api/charts/saveChart", data);
-    } catch (error) {
-      console.log(error, "error saving the chart");
-    }
-  };
+  // const saveChart = async (newJson: Record<string, any>) => {
+  //   const data = {
+  //     json: JSON.stringify(newJson),
+  //     chartKey,
+  //   };
+  //   try {
+  //     const res = await axios.post("/api/charts/saveChart", data);
+  //   } catch (error) {
+  //     console.log(error, "error saving the chart");
+  //   }
+  // };
   return (
     <>
       <Drawer
@@ -229,6 +229,10 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                       { value: "bar", label: "Bar" },
                       { value: "line", label: "Line" },
                       { value: "pie", label: "Pie" },
+                      { value: "column", label: "Column" },
+                      { value: "area", label: "Area" },
+                      { value: "donut", label: "Donut" },
+                      { value: "half-donut", label: "Semi Circle" },
                     ]}
                     value={field.value}
                     onChange={field.onChange}
