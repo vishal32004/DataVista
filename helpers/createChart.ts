@@ -1,20 +1,20 @@
-type ChartValues<X extends string, Y extends string, Prefix extends string> = {
-    chartTitle: string;
-    chartType: string;
-    xAxisLabel: string;
-    yAxisLabel: string;
-    xValueKey: X;
-    yValueKeys: Y[];
-    prefix: Prefix;
-};
-
+import { ChartValues } from "@/types";
+import { PieChart } from "./charts/pieChart";
 export const CreateChart = <T extends Record<string, any>, X extends string, Y extends string, Prefix extends string>(
     data: T[],
     values: ChartValues<X, Y, Prefix>
 ) => {
+
+
+    if (values.chartType === 'pie' || 'donut') {
+        const options = PieChart(data, values)
+        return options
+    }
+
+
     const xValues = data.map((entry) => entry[values.xValueKey]);
     const seriesData = values.yValueKeys.map((key) => {
-       const newKey =  values.prefix + '_' + key
+        const newKey = values.prefix + '_' + key
         return {
             name: key.replace(values.prefix, "").replace("_", " ").toUpperCase(),
             data: data.map((entry) => parseInt(entry[newKey].toString())),
@@ -73,6 +73,8 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
             enabled: false,
         },
     };
+
+
 
     return options;
 };

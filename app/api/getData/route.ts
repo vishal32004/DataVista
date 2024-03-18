@@ -12,18 +12,16 @@ export const GET = async (req: Request, res: NextResponse) => {
   }
 
   try {
-    const columnAliases = columns.map((_, index) => `${prefix}($${index + 1}) as ${prefix}_col${index + 1}`).join(", ");
-    const queryParams = [tableName, ...columns];
-    const query = `
-            SELECT 
-                year,
-                ${columnAliases}
-            FROM $1
-            GROUP BY year
-            ORDER BY year;
-        `;
+    const columnAliases = columns.map(column => `${prefix}("${column}") as ${prefix}_${column}`).join(", ");
+    const result = await pool.query(`
+      SELECT 
+        year,
+        ${columnAliases}
+      FROM ${tableName}
+      GROUP BY year
+      ORDER BY year;
+    `);
 
-    const result = await pool.query(query, queryParams);
     const data = result.rows;
 
     return NextResponse.json(data);
@@ -31,4 +29,4 @@ export const GET = async (req: Request, res: NextResponse) => {
     console.error("Error executing SQL query:", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
-};
+}
