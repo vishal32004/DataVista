@@ -1,7 +1,7 @@
 "use client";
 import { Drawer, Button, MultiSelect } from "@mantine/core";
 import { CreateChart } from "@/helpers/createChart";
-import { ComboboxItem, Select } from "@mantine/core";
+import { Select } from "@mantine/core";
 import {
   Form,
   FormField,
@@ -16,7 +16,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
 import qs from "query-string";
 const formSchema = z.object({
   chartTitle: z.string().min(2).max(50),
@@ -26,6 +25,7 @@ const formSchema = z.object({
   pages: z.string(),
   columns: z.array(z.string()),
   prefix: z.string(),
+  category: z.string(),
 });
 interface DrawerCreateChartProps {
   open: boolean;
@@ -70,6 +70,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
           prefix: values.prefix,
           tableName: values.pages,
           columns: JSON.stringify(values.columns),
+          category: values.category,
         },
       });
 
@@ -79,12 +80,10 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         chartType: values.chartType,
         xAxisLabel: values.chartXAxis,
         yAxisLabel: values.chartYAxis,
-        xValueKey: "year",
+        xValueKey: values.category,
         yValueKeys: values.columns,
         prefix: values.prefix.toLowerCase(),
       });
-      // saveChart(options)
-      console.log(options);
       setOptions(options);
       toggleDrawer();
     } catch (error) {
@@ -135,8 +134,12 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                 .replace(/\//g, "_"),
             })
           );
-          console.log(formattedColumns);
-          setColummn(formattedColumns);
+          const filteredColumns = formattedColumns.filter(
+            (column: { value: string }) =>
+              !["year", "month"].includes(column.value)
+          );
+          console.log(filteredColumns);
+          setColummn(filteredColumns);
         } catch (error) {
           console.error("Error fetching columns for page:", error);
         }
@@ -292,6 +295,26 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                     data={[
                       { value: "SUM", label: "Total" },
                       { value: "AVG", label: "Average" },
+                    ]}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Select A Type"
+                    searchable
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Prefix</FormLabel>
+                  <Select
+                    data={[
+                      { value: "year", label: "Year" },
+                      { value: "month", label: "Month" },
                     ]}
                     value={field.value}
                     onChange={field.onChange}

@@ -4,13 +4,10 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
     data: T[],
     values: ChartValues<X, Y, Prefix>
 ) => {
-
-
-    if (values.chartType === 'pie' || 'donut') {
-        const options = PieChart(data, values)
-        return options
+    if (values.chartType === 'pie' || values.chartType === 'donut' || values.chartType === 'half-donut') {
+        const options = PieChart(data, values);
+        return options;
     }
-
 
     const xValues = data.map((entry) => entry[values.xValueKey]);
     const seriesData = values.yValueKeys.map((key) => {
@@ -41,9 +38,9 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
             },
         },
         legend: {
-            layout: "vertical",
-            align: "right",
-            verticalAlign: "middle",
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'top'
         },
         plotOptions: {
             series: {

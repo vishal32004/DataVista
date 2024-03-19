@@ -77,11 +77,15 @@
 }
 body,
 html {
-  /* font-family: "Poppins";
-  font-weight: normal; */
+  font-family: "Poppins";
+  font-weight: normal;
   height: 100%;
 }
 
+body {
+  background-color: #f6f6f6;
+}
+/*
 .highcharts-figure,
 .highcharts-data-table table {
   min-width: 310px;
@@ -123,4 +127,4 @@ html {
 
 .highcharts-data-table tr:hover {
   background: #f1f7ff;
-}
+} */

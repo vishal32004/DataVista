@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import "@mantine/core/styles.css";
 
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import NavBar from "@/components/NavBar";
 
 const inter = GeistSans;
 
@@ -29,7 +30,7 @@ export default function RootLayout({
           <ColorSchemeScript />
         </head>
         <body
-          className={cn(inter.className, "bg-white dark:bg-[#313338] h-screen")}
+          className={cn(inter.className, "bg-[#f6f6f6] dark:bg-[#313338] h-screen")}
         >
           <ThemeProvider
             attribute="class"
@@ -38,12 +39,10 @@ export default function RootLayout({
             storageKey="discord-theme"
           >
             <MantineProvider>
-              <div className="h-full">
-                <div className="hidden md:flex flex-4 w-[72px] z-30 flex-col fixed inset-y-0">
-                  <Sidebar />
-                </div>
-                <main className="md:pl-[72px] h-full">{children}</main>
-              </div>
+              <header>
+                <NavBar/>
+              </header>
+              <main>{children}</main>
             </MantineProvider>
           </ThemeProvider>
         </body>

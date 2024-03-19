@@ -12,7 +12,7 @@ function convertDataForPieChart(data: DataObject[]): PieChartData[] {
     const pieChartDataMap: Map<string, number> = new Map();
     data.forEach(obj => {
         Object.keys(obj).forEach(key => {
-            if (!isNaN(parseFloat(obj[key]))) {
+            if (key.toLowerCase() !== 'year' && key.toLowerCase() !== 'month' && !isNaN(parseFloat(obj[key]))) {
                 const name = key.toUpperCase().replace('_', ' ');
                 const value = parseFloat(obj[key]);
                 if (pieChartDataMap.has(name)) {
@@ -76,6 +76,7 @@ export const PieChart = <T extends Record<string, any>, X extends string, Y exte
         plotOptions: plotOptions,
         series: [
             {
+                name: 'Data',
                 colorByPoint: true,
                 data: pieOptions
             }
