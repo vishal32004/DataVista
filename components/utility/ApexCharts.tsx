@@ -1,16 +1,17 @@
-import React from "react";
-import ReactApexChart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
+// "use client"
+// import React from "react";
+// import ReactApexChart from "react-apexcharts";
+// import { ApexOptions } from "apexcharts";
 
-interface ApexChartsUtilityProps {
-  options: ApexOptions;
-}
+// interface ApexChartsUtilityProps {
+//   options: ApexOptions;
+// }
 
-const ApexChartsUtility: React.FC<ApexChartsUtilityProps> = ({
-  options,
-  ...props
-}) => {
-  return <ReactApexChart options={options} {...props} />;
-};
+// const ApexChartsUtility: React.FC<ApexChartsUtilityProps> = ({
+//   options,
+//   ...props
+// }) => {
+//   return <ReactApexChart options={options} {...props} />;
+// };
 
-export default ApexChartsUtility;
+// export default ApexChartsUtility;

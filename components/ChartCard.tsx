@@ -37,7 +37,7 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
 
   return (
     <>
-      <Card className="bg-white">
+      <Card className="bg-white rounded-[30px]">
         <CardHeader className="flex flex-row items-center justify-between">
           <Button variant={"ghost"} onClick={toggleDrawer}>
             <Plus />
@@ -56,6 +56,8 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
         setOptions={setOptions}
         toggleDrawer={toggleDrawer}
         chartKey={chartKey}
+
+
       />
     </>
   );

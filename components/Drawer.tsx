@@ -226,7 +226,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="chartType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Chart Type</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Chart Type</FormLabel>
                   <Select
                     data={[
                       { value: "bar", label: "Bar" },
@@ -241,6 +241,9 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                     onChange={field.onChange}
                     placeholder="Select A Type"
                     searchable
+                    styles={{
+                      input: { backgroundColor: "#e6e6e9", color: "#000" },
+                    }}
                   />
                   <FormMessage />
                 </FormItem>
@@ -252,7 +255,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="pages"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Page Name</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Page Name</FormLabel>
                   <Select
                     data={pages}
                     value={field.value || ""}
@@ -262,6 +265,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                     }}
                     placeholder="Select A Page Name"
                     searchable
+                    styles={{ input: { backgroundColor: "#e6e6e9" } }}
                   />
                   <FormMessage />
                 </FormItem>
@@ -273,13 +277,14 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="columns"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Column Name</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Column Name</FormLabel>
                   <MultiSelect
                     data={colummn}
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Select A Page Name"
                     searchable
+                    styles={{ input: { backgroundColor: "#e6e6e9" } }}
                   />
                   <FormMessage />
                 </FormItem>
@@ -290,7 +295,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="prefix"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Prefix</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Prefix</FormLabel>
                   <Select
                     data={[
                       { value: "SUM", label: "Total" },
@@ -300,6 +305,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                     onChange={field.onChange}
                     placeholder="Select A Type"
                     searchable
+                    styles={{ input: { backgroundColor: "#e6e6e9" } }}
                   />
                   <FormMessage />
                 </FormItem>
@@ -310,7 +316,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Prefix</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Group By</FormLabel>
                   <Select
                     data={[
                       { value: "year", label: "Year" },
@@ -320,6 +326,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                     onChange={field.onChange}
                     placeholder="Select A Type"
                     searchable
+                    styles={{ input: { backgroundColor: "#e6e6e9" } }}
                   />
                   <FormMessage />
                 </FormItem>
