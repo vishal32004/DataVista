@@ -7,3 +7,14 @@ export type ChartValues<X extends string, Y extends string, Prefix extends strin
     yValueKeys: Y[];
     prefix: Prefix;
 }
+
+export type chartData = {
+    options: Record<string, any>
+    filters: string[]
+}
+
+
+export interface FilterOption {
+    label: string;
+    value: string;
+}

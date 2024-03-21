@@ -15,7 +15,7 @@ export const GET = async (req: Request, res: NextResponse) => {
   try {
     const columnAliases = columns.map(column => `${prefix}("${column}") as ${prefix}_${column}`).join(", ");
     let sql = `
-      SELECT 
+      SELECT
         year,
         ${columnAliases}
       FROM ${tableName}
@@ -46,3 +46,62 @@ export const GET = async (req: Request, res: NextResponse) => {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+
+
+// async function onSubmit(values: z.infer<typeof formSchema>) {
+//   console.log(values, "test here");
+
+//   if (values.prefix === "") {
+//     alert('test')
+//     try {
+//       const res = await axios.get("/api/data", {
+//         params: {
+//           tableName: values.pages,
+//           columns: JSON.stringify(values.columns),
+//         },
+//       });
+
+//       console.log(res.data);
+//       const options = CreateChart(res.data, {
+//         chartTitle: values.chartTitle,
+//         chartType: values.chartType,
+//         xAxisLabel: values.chartXAxis,
+//         yAxisLabel: values.chartYAxis,
+//         xValueKey: values.category,
+//         yValueKeys: values.columns,
+//         prefix: values.prefix.toLowerCase(),
+//       });
+//       setOptions(options);
+//       toggleDrawer();
+//     } catch (error) {
+//       console.error("Error submitting form:", error);
+//     }
+//   } else {
+//     if (values.prefix)
+//           try {
+//       const res = await axios.get("/api/dataPrefix", {
+//         params: {
+//           prefix: values.prefix,
+//           tableName: values.pages,
+//           columns: JSON.stringify(values.columns),
+//           category: values.category,
+//         },
+//       });
+
+//       console.log(res.data);
+//       const options = CreateChart(res.data, {
+//         chartTitle: values.chartTitle,
+//         chartType: values.chartType,
+//         xAxisLabel: values.chartXAxis,
+//         yAxisLabel: values.chartYAxis,
+//         xValueKey: values.category,
+//         yValueKeys: values.columns,
+//         prefix: values.prefix.toLowerCase(),
+//       });
+//       setOptions(options);
+//       toggleDrawer();
+//          } catch (error) {
+//       console.error("Error submitting form:", error);
+//          }
+//   }
+// }

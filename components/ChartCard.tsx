@@ -7,9 +7,13 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { DrawerCreateChart } from "./Drawer";
+import { Select } from "@mantine/core";
+import { FilterOption } from "@/types";
+
 const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   const [options, setOptions] = useState<Record<string, any>>({});
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [filters, setFilters] = useState<FilterOption[]>([]);
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
@@ -35,6 +39,21 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     fetchData();
   }, [chartKey]);
 
+  const handleFilterAndCharts = (
+    options: Record<string, any>,
+    filters: string[]
+  ) => {
+    if (options) {
+      setOptions(options);
+    }
+    if (filters) {
+      const formattedFilters = filters.map((label) => ({
+        label,
+        value: label,
+      }));
+      setFilters(formattedFilters);
+    }
+  };
   return (
     <>
       <Card className="bg-white rounded-[30px]">
@@ -42,6 +61,19 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
           <Button variant={"ghost"} onClick={toggleDrawer}>
             <Plus />
           </Button>
+
+          <Select
+            data={filters}
+            placeholder="Select"
+            searchable
+            styles={{
+              input: {
+                backgroundColor: "#fff",
+                color: "#000",
+                borderRadius: "30px",
+              },
+            }}
+          />
         </CardHeader>
         <CardContent className="highcharts-dark">
           {options ? (
@@ -53,11 +85,9 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
       </Card>
       <DrawerCreateChart
         open={isDrawerOpen}
-        setOptions={setOptions}
+        handleFilterAndCharts={handleFilterAndCharts}
         toggleDrawer={toggleDrawer}
         chartKey={chartKey}
-
-
       />
     </>
   );

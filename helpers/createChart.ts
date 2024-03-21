@@ -1,4 +1,4 @@
-import { ChartValues } from "@/types";
+import { ChartValues, chartData } from "@/types";
 import { PieChart } from "./charts/pieChart";
 export const CreateChart = <T extends Record<string, any>, X extends string, Y extends string, Prefix extends string>(
     data: T[],
@@ -74,6 +74,11 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
     };
 
 
+    const chartData: chartData = {
+        options: options,
+        filters: xValues
+    }
 
-    return options;
+
+    return chartData;
 };

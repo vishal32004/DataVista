@@ -7,7 +7,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -17,6 +16,7 @@ import { z } from "zod";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import qs from "query-string";
+import { chartData } from "@/types";
 const formSchema = z.object({
   chartTitle: z.string().min(2).max(50),
   chartType: z.string(),
@@ -29,7 +29,10 @@ const formSchema = z.object({
 });
 interface DrawerCreateChartProps {
   open: boolean;
-  setOptions: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  handleFilterAndCharts: (
+    options: Record<string, any>,
+    filters: string[]
+  ) => void;
   toggleDrawer: () => void;
   chartKey: string;
 }
@@ -39,7 +42,7 @@ type Page = {
 };
 export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
   open,
-  setOptions,
+  handleFilterAndCharts,
   toggleDrawer,
   chartKey,
 }) => {
@@ -64,7 +67,8 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
           category: values.category,
         },
       });
-      const options = CreateChart(res.data, {
+
+      const chartData: chartData = CreateChart(res.data, {
         chartTitle: values.chartTitle,
         chartType: values.chartType,
         xAxisLabel: values.chartXAxis,
@@ -73,7 +77,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         yValueKeys: values.columns,
         prefix: values.prefix.toLowerCase(),
       });
-      setOptions(options);
+      handleFilterAndCharts(chartData.options, chartData.filters);
       toggleDrawer();
     } catch (error) {
       console.error("Error submitting form:", error);
