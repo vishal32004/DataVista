@@ -23,7 +23,7 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
             type: values.chartType,
         },
 
-        colors: ['#0d181c', '#cadaea',],
+        colors: ['#0d181c', '#cadaea', '#9CAFAA', '#76ABAE', '#9BB0C1', '#7469B6', '#40679E'],
         title: {
             text: values.chartTitle,
             align: "left",
