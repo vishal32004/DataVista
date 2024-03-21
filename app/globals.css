@@ -85,7 +85,7 @@ html {
 body {
   background-color: #f6f6f6;
 }
-text {
+text, tspan {
   font-family: "Poppins", sans-serif !important ;
   font-weight: 500 !important ;
   font-style: normal !important ;
