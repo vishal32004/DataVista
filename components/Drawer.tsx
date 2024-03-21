@@ -49,23 +49,14 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
 
   const [pages, setPages] = useState<Page[]>([]);
   const [selectedPage, setSelectedPage] = useState<string | null>("");
-  const [colummn, setColummn] = useState<
-    [
-      {
-        value: string;
-        label: string;
-      }
-    ]
-  >([
-    {
-      value: "",
-      label: "",
-    },
+
+  const [prefixGroup, setPrefixGroup] = useState([]);
+  const [colummn, setColummn] = useState<[{ value: string; label: string }]>([
+    { value: "", label: "" },
   ]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values, "test here");
     try {
-      const res = await axios.get("/api/getData", {
+      const res = await axios.get("/api/data", {
         params: {
           prefix: values.prefix,
           tableName: values.pages,
@@ -73,8 +64,6 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
           category: values.category,
         },
       });
-
-      console.log(res.data);
       const options = CreateChart(res.data, {
         chartTitle: values.chartTitle,
         chartType: values.chartType,
@@ -146,6 +135,37 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
       };
 
       fetchColumnsForPage();
+    }
+  }, [selectedPage]);
+
+  useEffect(() => {
+    if (selectedPage) {
+      const fetchPrefix = async () => {
+        try {
+          const url = qs.stringifyUrl({
+            url: "/api/getPrefix",
+            query: {
+              selectedPage: selectedPage,
+            },
+          });
+          const response = await axios.get(url);
+
+          const formatedPrefix = response.data.map(
+            (prefix: { prefix: string }) => ({
+              label:
+                prefix.prefix.charAt(0).toUpperCase() + prefix.prefix.slice(1),
+              value: prefix.prefix.toLowerCase(),
+            })
+          );
+
+          console.log(response.data);
+          setPrefixGroup(formatedPrefix);
+        } catch (error) {
+          console.error("Error fetching columns for page:", error);
+        }
+      };
+
+      fetchPrefix();
     }
   }, [selectedPage]);
 
@@ -226,7 +246,9 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="chartType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Chart Type</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Chart Type
+                  </FormLabel>
                   <Select
                     data={[
                       { value: "bar", label: "Bar" },
@@ -255,7 +277,9 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="pages"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Page Name</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Page Name
+                  </FormLabel>
                   <Select
                     data={pages}
                     value={field.value || ""}
@@ -277,7 +301,9 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="columns"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Column Name</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Column Name
+                  </FormLabel>
                   <MultiSelect
                     data={colummn}
                     value={field.value}
@@ -295,7 +321,9 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="prefix"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Prefix</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Prefix
+                  </FormLabel>
                   <Select
                     data={[
                       { value: "SUM", label: "Total" },
@@ -316,12 +344,11 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">Group By</FormLabel>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Group By
+                  </FormLabel>
                   <Select
-                    data={[
-                      { value: "year", label: "Year" },
-                      { value: "month", label: "Month" },
-                    ]}
+                    data={prefixGroup}
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Select A Type"
