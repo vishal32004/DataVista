@@ -31,7 +31,10 @@ interface DrawerCreateChartProps {
   open: boolean;
   handleFilterAndCharts: (
     options: Record<string, any>,
-    filters: string[]
+    filters: string[],
+    columns: string[],
+    pages: string,
+    category: string
   ) => void;
   toggleDrawer: () => void;
   chartKey: string;
@@ -52,7 +55,6 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
 
   const [pages, setPages] = useState<Page[]>([]);
   const [selectedPage, setSelectedPage] = useState<string | null>("");
-
   const [prefixGroup, setPrefixGroup] = useState([]);
   const [colummn, setColummn] = useState<[{ value: string; label: string }]>([
     { value: "", label: "" },
@@ -77,7 +79,13 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         yValueKeys: values.columns,
         prefix: values.prefix.toLowerCase(),
       });
-      handleFilterAndCharts(chartData.options, chartData.filters);
+      handleFilterAndCharts(
+        chartData.options,
+        chartData.filters,
+        values.columns,
+        values.pages,
+        values.category
+      );
       toggleDrawer();
     } catch (error) {
       console.error("Error submitting form:", error);
