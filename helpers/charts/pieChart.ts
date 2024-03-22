@@ -70,7 +70,7 @@ export const PieChart = <T extends Record<string, any>, X extends string, Y exte
         chart: {
             type: 'pie'
         },
-        colors: ['#0d181c', '#cadaea','#9CAFAA','#76ABAE','#9BB0C1','#7469B6','#40679E'],
+        colors: ['#0d181c', '#cadaea', '#9CAFAA', '#76ABAE', '#9BB0C1', '#7469B6', '#40679E'],
         title: {
             text: values.chartTitle,
         },
@@ -83,5 +83,8 @@ export const PieChart = <T extends Record<string, any>, X extends string, Y exte
             }
         ]
     };
-    return pieObj;
+    return {
+        options: pieObj,
+        filters: []
+    };
 };
