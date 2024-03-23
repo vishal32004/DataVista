@@ -9,6 +9,7 @@ import { Plus } from "lucide-react";
 import { DrawerCreateChart } from "./Drawer";
 import { Select } from "@mantine/core";
 import { FilterOption } from "@/types";
+import { CreateChart } from "@/helpers/createChart";
 
 const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   const [options, setOptions] = useState<Record<string, any>>({});
@@ -18,6 +19,7 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   const [selectedFilter, setSelectedFilter] = useState<string | null>("");
   const [tableName, setTableName] = useState<string | null>("");
   const [whereClause, setWhereClause] = useState<string | null>("");
+  const [prefix, setPrefix] = useState('')
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
@@ -47,13 +49,14 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     filters: string[],
     columns: string[],
     pages: string,
-    category: string
+    category: string,
+    prefixnew: string
   ) => {
-    console.log(options)
-    console.log(filters)
-    console.log(columns)
-    console.log(pages)
-    console.log(category)
+    console.log(options);
+    console.log(filters);
+    console.log(columns);
+    console.log(pages);
+    // console.log(category);
     if (options) {
       setOptions(options);
     }
@@ -75,6 +78,7 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     }
 
     setWhereClause(category);
+    setPrefix(prefixnew)
   };
 
   useEffect(() => {
@@ -88,11 +92,21 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
               columns: JSON.stringify(columnsFilters),
               tableName: tableName,
               where: whereClause,
+              prefix: prefix
             },
           });
           const response = await axios.get(url);
-          console.log(response.data,"test");
-          // se(formatedPrefix);
+          console.log(response.data)
+          const filteredChartData = CreateChart(response.data, {
+            chartTitle: options.title.text,
+            chartType: options.chart.type,
+            xAxisLabel: options.xAxis.title.text,
+            yAxisLabel: options.yAxis.title.text,
+            xValueKey: options.xAxis.categories,
+            yValueKeys: columnsFilters,
+            prefix: prefix,
+          });
+          setOptions(filteredChartData.options);
         } catch (error) {
           console.error("Error fetching columns for page:", error);
         }
@@ -106,11 +120,11 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     <>
       <Card className="bg-white rounded-[30px]">
         <CardHeader className="flex flex-row items-center justify-between">
-          {filters.length === 0 && (
+          {/* {filters.length === 0 && ( */}
             <Button variant={"ghost"} onClick={toggleDrawer}>
               <Plus />
             </Button>
-          )}
+          {/* )} */}
 
           {filters.length > 0 && (
             <Select

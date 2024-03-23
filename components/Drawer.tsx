@@ -34,7 +34,8 @@ interface DrawerCreateChartProps {
     filters: string[],
     columns: string[],
     pages: string,
-    category: string
+    category: string,
+    prefix: string
   ) => void;
   toggleDrawer: () => void;
   chartKey: string;
@@ -84,7 +85,8 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         chartData.filters,
         values.columns,
         values.pages,
-        values.category
+        values.category,
+        values.prefix.toLowerCase(),
       );
       toggleDrawer();
     } catch (error) {
