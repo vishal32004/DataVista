@@ -71,22 +71,26 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         },
       });
 
-      const chartData: chartData = CreateChart(res.data, {
-        chartTitle: values.chartTitle,
-        chartType: values.chartType,
-        xAxisLabel: values.chartXAxis,
-        yAxisLabel: values.chartYAxis,
-        xValueKey: values.category,
-        yValueKeys: values.columns,
-        prefix: values.prefix.toLowerCase(),
-      });
+      const chartData: chartData = CreateChart(
+        res.data,
+        {
+          chartTitle: values.chartTitle,
+          chartType: values.chartType,
+          xAxisLabel: values.chartXAxis,
+          yAxisLabel: values.chartYAxis,
+          xValueKey: values.category,
+          yValueKeys: values.columns,
+          prefix: values.prefix.toLowerCase(),
+        },
+        false
+      );
       handleFilterAndCharts(
         chartData.options,
         chartData.filters,
         values.columns,
         values.pages,
         values.category,
-        values.prefix.toLowerCase(),
+        values.prefix.toLowerCase()
       );
       toggleDrawer();
     } catch (error) {

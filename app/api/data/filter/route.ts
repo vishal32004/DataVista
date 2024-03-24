@@ -15,15 +15,26 @@ export const GET = async (req: Request, res: NextResponse) => {
     return new NextResponse("Invalid parameters", { status: 400 });
   }
 
+  console.log(selectedFilter, "columns")
+
   try {
     const columnAliases = columns.map(column => `${prefix}("${column}") as ${prefix}_${column}`).join(", ");
     const result = await pool.query(`
-      SELECT
-        ${columnAliases}
-      FROM ${tableName} where ${where} = '${selectedFilter}'
-      GROUP BY ${where}
-      ORDER BY ${where};
-    `);
+    SELECT
+      ${columnAliases}
+    FROM ${tableName}
+    WHERE ${where} IN (${JSON.parse(selectedFilter).map(filter => `'${filter}'`).join(", ")})
+    GROUP BY ${where}
+    ORDER BY ${where};
+  `);
+
+    console.log(`
+    SELECT
+      ${columnAliases}
+    FROM ${tableName} where ${where} = '${selectedFilter}'
+    GROUP BY ${where}
+    ORDER BY ${where};
+  `)
 
     const data = result.rows;
 

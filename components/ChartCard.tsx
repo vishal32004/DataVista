@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { DrawerCreateChart } from "./Drawer";
-import { Select } from "@mantine/core";
+import { MultiSelect } from "@mantine/core";
 import { FilterOption } from "@/types";
 import { CreateChart } from "@/helpers/createChart";
 
@@ -16,10 +16,10 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [filters, setFilters] = useState<FilterOption[]>([]);
   const [columnsFilters, setcolumnsFilters] = useState<string[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<string | null>("");
+  const [selectedFilter, setSelectedFilter] = useState<string[] | null>([]);
   const [tableName, setTableName] = useState<string | null>("");
   const [whereClause, setWhereClause] = useState<string | null>("");
-  const [prefix, setPrefix] = useState('')
+  const [prefix, setPrefix] = useState("");
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
@@ -52,11 +52,6 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     category: string,
     prefixnew: string
   ) => {
-    console.log(options);
-    console.log(filters);
-    console.log(columns);
-    console.log(pages);
-    // console.log(category);
     if (options) {
       setOptions(options);
     }
@@ -78,56 +73,59 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     }
 
     setWhereClause(category);
-    setPrefix(prefixnew)
+    setPrefix(prefixnew);
   };
 
   useEffect(() => {
-    if (selectedFilter) {
-      const fetchFilteredData = async () => {
-        try {
-          const url = qs.stringifyUrl({
-            url: "/api/data/filter",
-            query: {
-              selectedFilter: selectedFilter,
-              columns: JSON.stringify(columnsFilters),
-              tableName: tableName,
-              where: whereClause,
-              prefix: prefix
-            },
-          });
-          const response = await axios.get(url);
-          console.log(response.data)
-          const filteredChartData = CreateChart(response.data, {
+    const fetchFilteredData = async () => {
+      try {
+        console.log(selectedFilter, "anothe test");
+        const url = qs.stringifyUrl({
+          url: "/api/data/filter",
+          query: {
+            selectedFilter: JSON.stringify(selectedFilter),
+            columns: JSON.stringify(columnsFilters),
+            tableName: tableName,
+            where: whereClause,
+            prefix: prefix,
+          },
+        });
+        const response = await axios.get(url);
+        console.log(response.data);
+        const filteredChartData = CreateChart(
+          response.data,
+          {
             chartTitle: options.title.text,
             chartType: options.chart.type,
             xAxisLabel: options.xAxis.title.text,
             yAxisLabel: options.yAxis.title.text,
-            xValueKey: options.xAxis.categories,
+            xValueKey: selectedFilter,
             yValueKeys: columnsFilters,
             prefix: prefix,
-          });
-          setOptions(filteredChartData.options);
-        } catch (error) {
-          console.error("Error fetching columns for page:", error);
-        }
-      };
+          },
+          true
+        );
+        setOptions(filteredChartData.options);
+      } catch (error) {
+        console.error("Error fetching columns for page:", error);
+      }
+    };
 
-      fetchFilteredData();
-    }
-  }, [columnsFilters, selectedFilter, tableName, whereClause]);
+    fetchFilteredData();
+  }, [selectedFilter]);
 
   return (
     <>
       <Card className="bg-white rounded-[30px]">
         <CardHeader className="flex flex-row items-center justify-between">
           {/* {filters.length === 0 && ( */}
-            <Button variant={"ghost"} onClick={toggleDrawer}>
-              <Plus />
-            </Button>
+          <Button variant={"ghost"} onClick={toggleDrawer}>
+            <Plus />
+          </Button>
           {/* )} */}
 
           {filters.length > 0 && (
-            <Select
+            <MultiSelect
               data={filters}
               placeholder="Select"
               searchable
@@ -138,9 +136,8 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
                   borderRadius: "30px",
                 },
               }}
-              onChange={(value, option) => {
-                setSelectedFilter(value);
-              }}
+              value={selectedFilter}
+              onChange={setSelectedFilter}
             />
           )}
         </CardHeader>

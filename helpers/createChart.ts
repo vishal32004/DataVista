@@ -2,14 +2,24 @@ import { ChartValues, chartData } from "@/types";
 import { PieChart } from "./charts/pieChart";
 export const CreateChart = <T extends Record<string, any>, X extends string, Y extends string, Prefix extends string>(
     data: T[],
-    values: ChartValues<X, Y, Prefix>
+    values: ChartValues<X, Y, Prefix>,
+    filter: boolean
 ) => {
     if (values.chartType === 'pie' || values.chartType === 'donut' || values.chartType === 'half-donut') {
         const options = PieChart(data, values);
         return options;
     }
 
-    const xValues = data.map((entry) => entry[values.xValueKey]);
+    console.log(values)
+    let xValues;
+    if (filter) {
+        const newXvalues = []
+        newXvalues.push(values.xValueKey)
+        xValues = newXvalues
+        console.log(xValues, "here foes ")
+    } else {
+        xValues = data.map((entry) => entry[values.xValueKey]);
+    }
     const seriesData = values.yValueKeys.map((key) => {
         const newKey = values.prefix + '_' + key
         return {
@@ -79,6 +89,6 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
         filters: xValues
     }
 
-
+    console.log(options)
     return chartData;
 };
