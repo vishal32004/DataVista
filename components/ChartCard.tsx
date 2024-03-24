@@ -54,26 +54,25 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     category: string,
     prefixnew: string
   ) => {
-    if (options) {
-      setOptions(options);
+    if (
+      !options ||
+      !filters ||
+      !columns ||
+      !pages ||
+      !category ||
+      !!prefixnew
+    ) {
+      alert('not worked')
+      // return;
     }
-    if (filters) {
-      const formattedFilters = filters.map((label) => ({
-        label,
-        value: label,
-      }));
-      setFilters(formattedFilters);
-    }
-
-    if (columns) {
-      console.log(columns);
-      setcolumnsFilters(columns);
-    }
-
-    if (pages) {
-      setTableName(pages);
-    }
-
+    setOptions(options);
+    const formattedFilters = filters.map((label) => ({
+      label,
+      value: label,
+    }));
+    setFilters(formattedFilters);
+    setcolumnsFilters(columns);
+    setTableName(pages);
     setWhereClause(category);
     setPrefix(prefixnew);
   };
@@ -81,7 +80,6 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   useEffect(() => {
     const fetchFilteredData = async () => {
       try {
-        console.log(selectedFilter, "anothe test");
         const url = qs.stringifyUrl({
           url: "/api/data/filter",
           query: {
@@ -93,7 +91,6 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
           },
         });
         const response = await axios.get(url);
-        console.log(response.data);
         const filteredChartData = CreateChart(
           response.data,
           {
@@ -112,8 +109,9 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
         console.error("Error fetching columns for page:", error);
       }
     };
-
-    fetchFilteredData();
+    if (selectedFilter !== undefined && selectedFilter.length > 0) {
+      fetchFilteredData();
+    }
   }, [selectedFilter]);
 
   return (

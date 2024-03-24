@@ -10,15 +10,16 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
         return options;
     }
 
-    console.log(values)
     let xValues;
     if (filter) {
-        const newXvalues = [];
+        // const newXvalues = [];
         const parsedValue = JSON.parse(values.xValueKey)
-        for (let i = 0; i < parsedValue.length; i++) {
-            newXvalues.push(values.xValueKey[i]);
-        }
-        xValues = newXvalues
+        console.log(parsedValue,"test bro")
+        // for (let i = 0; i < parsedValue.length; i++) {
+        //     newXvalues.push(values.xValueKey[i]);
+        // }
+        xValues = parsedValue
+        console.log(xValues,'values ')
     } else {
         xValues = data.map((entry) => entry[values.xValueKey]);
     }
@@ -90,7 +91,5 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
         options: options,
         filters: xValues
     }
-
-    console.log(options)
     return chartData;
 };

@@ -14,7 +14,6 @@ export const GET = async (req: Request, res: NextResponse) => {
     return new NextResponse("Invalid parameters", { status: 400 });
   }
 
-  console.log(selectedFilter, "columns");
 
   try {
     const columnAliases = columns.map((column: string) => `${prefix}("${column}") as ${prefix}_${column}`).join(", ");

@@ -175,8 +175,6 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               value: prefix.prefix.toLowerCase(),
             })
           );
-
-          console.log(response.data);
           setPrefixGroup(formatedPrefix);
         } catch (error) {
           console.error("Error fetching columns for page:", error);
