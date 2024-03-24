@@ -16,7 +16,9 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [filters, setFilters] = useState<FilterOption[]>([]);
   const [columnsFilters, setcolumnsFilters] = useState<string[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<string[] | null>([]);
+  const [selectedFilter, setSelectedFilter] = useState<string[] | undefined>(
+    []
+  );
   const [tableName, setTableName] = useState<string | null>("");
   const [whereClause, setWhereClause] = useState<string | null>("");
   const [prefix, setPrefix] = useState("");
@@ -99,7 +101,7 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
             chartType: options.chart.type,
             xAxisLabel: options.xAxis.title.text,
             yAxisLabel: options.yAxis.title.text,
-            xValueKey: selectedFilter,
+            xValueKey: JSON.stringify(selectedFilter),
             yValueKeys: columnsFilters,
             prefix: prefix,
           },

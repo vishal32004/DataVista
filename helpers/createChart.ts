@@ -13,10 +13,12 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
     console.log(values)
     let xValues;
     if (filter) {
-        const newXvalues = []
-        newXvalues.push(values.xValueKey)
+        const newXvalues = [];
+        const parsedValue = JSON.parse(values.xValueKey)
+        for (let i = 0; i < parsedValue.length; i++) {
+            newXvalues.push(values.xValueKey[i]);
+        }
         xValues = newXvalues
-        console.log(xValues, "here foes ")
     } else {
         xValues = data.map((entry) => entry[values.xValueKey]);
     }
