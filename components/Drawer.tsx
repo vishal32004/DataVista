@@ -16,34 +16,9 @@ import { z } from "zod";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import qs from "query-string";
-import { chartData } from "@/types";
-const formSchema = z.object({
-  chartTitle: z.string().min(2).max(50),
-  chartType: z.string(),
-  chartXAxis: z.string(),
-  chartYAxis: z.string(),
-  pages: z.string(),
-  columns: z.array(z.string()),
-  prefix: z.string(),
-  category: z.string(),
-});
-interface DrawerCreateChartProps {
-  open: boolean;
-  handleFilterAndCharts: (
-    options: Record<string, any>,
-    filters: string[],
-    columns: string[],
-    pages: string,
-    category: string,
-    prefix: string
-  ) => void;
-  toggleDrawer: () => void;
-  chartKey: string;
-}
-type Page = {
-  value: string;
-  label: string;
-};
+import { chartData, formSchema, DrawerCreateChartProps, Page } from "@/types";
+import { colorOptions, colorsArray } from "@/helpers/colors";
+
 export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
   open,
   handleFilterAndCharts,
@@ -52,6 +27,14 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      category: "",
+      chartTitle: "",
+      chartType: "bar",
+      chartXAxis: "",
+      chartYAxis: "",
+      colors: "0",
+    },
   });
 
   const [pages, setPages] = useState<Page[]>([]);
@@ -81,6 +64,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
           xValueKey: values.category,
           yValueKeys: values.columns,
           prefix: values.prefix.toLowerCase(),
+          colors: colorsArray[Number(values.colors)],
         },
         false
       );
@@ -90,7 +74,8 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         values.columns,
         values.pages,
         values.category,
-        values.prefix.toLowerCase()
+        values.prefix.toLowerCase(),
+        chartData.is3D
       );
       toggleDrawer();
     } catch (error) {
@@ -145,7 +130,6 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
             (column: { value: string }) =>
               !["year", "month"].includes(column.value)
           );
-          console.log(filteredColumns);
           setColummn(filteredColumns);
         } catch (error) {
           console.error("Error fetching columns for page:", error);
@@ -227,38 +211,6 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
             />
             <FormField
               control={form.control}
-              name="chartXAxis"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
-                    X-Axis Label
-                  </FormLabel>
-                  <Input
-                    className="dark:bg-[#1e1f22] bg-[#e6e6e9] dark:text-white border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
-                    placeholder="Enter Chart Title"
-                    {...field}
-                  />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="chartYAxis"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
-                    Y-Axis Label
-                  </FormLabel>
-                  <Input
-                    className="dark:bg-[#1e1f22] bg-[#e6e6e9] dark:text-white border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
-                    placeholder="Enter Chart Title"
-                    {...field}
-                  />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="chartType"
               render={({ field }) => (
                 <FormItem>
@@ -273,7 +225,15 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                       { value: "column", label: "Column" },
                       { value: "area", label: "Area" },
                       { value: "donut", label: "Donut" },
-                      { value: "half-donut", label: "Semi Circle" },
+                      { value: "half-donut", label: "Half Donut" },
+                      { value: "stacked-bar", label: "Stacked Bar" },
+                      { value: "stacked-column", label: "Stacked Column" },
+                      { value: "stacked-area", label: "Stacked Area" },
+                      { value: "3d-cylinder", label: "Cylinder" },
+                      { value: "3d-column", label: "3D-Column" },
+                      { value: "3d-donut", label: "3D-donut" },
+                      { value: "3d-pie", label: "3D-pie" },
+                      { value: "3d-area", label: "3D-Area" },
                     ]}
                     value={field.value}
                     onChange={field.onChange}
@@ -284,6 +244,46 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                     }}
                   />
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="chartXAxis"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    X-Axis Label
+                  </FormLabel>
+                  {form.watch("chartType") !== "pie" &&
+                    form.watch("chartType") !== "donut" &&
+                    form.watch("chartType") !== "half-donut" && (
+                      <Input
+                        className="dark:bg-[#1e1f22] bg-[#e6e6e9] dark:text-white border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                        placeholder="Enter X-Axis Label"
+                        {...field}
+                      />
+                    )}
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="chartYAxis"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Y-Axis Label
+                  </FormLabel>
+                  {form.watch("chartType") !== "pie" &&
+                    form.watch("chartType") !== "donut" &&
+                    form.watch("chartType") !== "half-donut" && (
+                      <Input
+                        className="dark:bg-[#1e1f22] bg-[#e6e6e9] dark:text-white border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                        placeholder="Enter Y-Axis Label"
+                        {...field}
+                      />
+                    )}
                 </FormItem>
               )}
             />
@@ -375,6 +375,45 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="colors"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
+                    Group By
+                  </FormLabel>
+                  <Select
+                    data={colorOptions}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Select A Color"
+                    searchable
+                    styles={{ input: { backgroundColor: "#e6e6e9" } }}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="mt-4">
+              <p className="text-sm font-bold text-zinc-500 dark:text-white mb-2">
+                Color Array Preview:
+              </p>
+              <div className="flex">
+                {form.watch("colors") !== undefined &&
+                  colorsArray[parseInt(form.watch("colors"))].map(
+                    (color, index) => (
+                      <div
+                        key={index}
+                        className="w-8 h-8 mr-2 rounded-full"
+                        style={{ backgroundColor: color }}
+                      ></div>
+                    )
+                  )}
+              </div>
+            </div>
             <Button className="w-full" type="submit">
               Submit
             </Button>

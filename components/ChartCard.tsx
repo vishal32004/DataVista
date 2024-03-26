@@ -1,10 +1,14 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import qs from "query-string";
 import HighchartsUtility from "@/components/utility/highCharts";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { DrawerCreateChart } from "./Drawer";
 import { MultiSelect } from "@mantine/core";
@@ -22,9 +26,15 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
   const [tableName, setTableName] = useState<string | null>("");
   const [whereClause, setWhereClause] = useState<string | null>("");
   const [prefix, setPrefix] = useState("");
+  const [alpha, setAlpha] = useState<number>(15);
+  const [beta, setBeta] = useState<number>(15);
+  const [depth, setDepth] = useState<number>(50);
+  const [chart3d, setChart3d] = useState<boolean>(false);
+
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,17 +62,11 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     columns: string[],
     pages: string,
     category: string,
-    prefixnew: string
+    prefixnew: string,
+    is3d: boolean
   ) => {
-    if (
-      !options ||
-      !filters ||
-      !columns ||
-      !pages ||
-      !category ||
-      !!prefixnew
-    ) {
-      alert('not worked')
+    if (!options || !filters || !columns || !pages || !category || !prefixnew) {
+      alert("not worked");
       // return;
     }
     setOptions(options);
@@ -75,6 +79,7 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     setTableName(pages);
     setWhereClause(category);
     setPrefix(prefixnew);
+    setChart3d(is3d);
   };
 
   useEffect(() => {
@@ -91,16 +96,22 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
           },
         });
         const response = await axios.get(url);
+        let newChartType = options.chart.type;
+        if (chart3d) {
+          newChartType = "3d-" + newChartType;
+          alert(newChartType);
+        }
         const filteredChartData = CreateChart(
           response.data,
           {
             chartTitle: options.title.text,
-            chartType: options.chart.type,
+            chartType: newChartType,
             xAxisLabel: options.xAxis.title.text,
             yAxisLabel: options.yAxis.title.text,
             xValueKey: JSON.stringify(selectedFilter),
             yValueKeys: columnsFilters,
             prefix: prefix,
+            colors: options.colors,
           },
           true
         );
@@ -114,16 +125,43 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
     }
   }, [selectedFilter]);
 
+  const handleAlphaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAlpha(parseInt(e.target.value));
+  };
+
+  const handleBetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBeta(parseInt(e.target.value));
+  };
+
+  const handleDepthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDepth(parseInt(e.target.value));
+  };
+
+  useEffect(() => {
+    if (options.chart && options.chart.options3d) {
+      const updatedOptions = {
+        ...options,
+        chart: {
+          ...options.chart,
+          options3d: {
+            ...options.chart.options3d,
+            alpha: alpha,
+            beta: beta,
+            depth: depth,
+          },
+        },
+      };
+      setOptions(updatedOptions);
+    }
+  }, [alpha, beta, depth]);
+
   return (
     <>
       <Card className="bg-white rounded-[30px]">
         <CardHeader className="flex flex-row items-center justify-between">
-          {/* {filters.length === 0 && ( */}
           <Button variant={"ghost"} onClick={toggleDrawer}>
             <Plus />
           </Button>
-          {/* )} */}
-
           {filters.length > 0 && (
             <MultiSelect
               data={filters}
@@ -148,6 +186,59 @@ const ChartCard: React.FC<{ chartKey: string }> = ({ chartKey }) => {
             <p>Create A chart</p>
           )}
         </CardContent>
+
+        {chart3d && <CardFooter>
+          <table>
+            <tr>
+              <td>
+                <label htmlFor="alpha">Alpha Angle</label>
+              </td>
+              <td>
+                <input
+                  id="alpha"
+                  type="range"
+                  min="0"
+                  max="45"
+                  value={alpha}
+                  onChange={handleAlphaChange}
+                />{" "}
+                <span className="value">{alpha}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label htmlFor="beta">Beta Angle</label>
+              </td>
+              <td>
+                <input
+                  id="beta"
+                  type="range"
+                  min="-45"
+                  max="45"
+                  value={beta}
+                  onChange={handleBetaChange}
+                />{" "}
+                <span className="value">{beta}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label htmlFor="depth">Depth</label>
+              </td>
+              <td>
+                <input
+                  id="depth"
+                  type="range"
+                  min="20"
+                  max="100"
+                  value={depth}
+                  onChange={handleDepthChange}
+                />{" "}
+                <span className="value">{depth}</span>
+              </td>
+            </tr>
+          </table>
+        </CardFooter>}
       </Card>
       <DrawerCreateChart
         open={isDrawerOpen}

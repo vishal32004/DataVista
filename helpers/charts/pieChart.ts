@@ -32,9 +32,30 @@ export const PieChart = <T extends Record<string, any>, X extends string, Y exte
     data: T[],
     values: ChartValues<X, Y, Prefix>
 ) => {
+
+
+    let chartType = values.chartType;
+    let chartOptions = {}
+    let is3d = false
+    if (values.chartType.startsWith('3d')) {
+        chartType = values.chartType.replace('3d-', '');
+        is3d = true
+        alert(chartType)
+        chartOptions = {
+            type: 'pie',
+            options3d: {
+                enabled: true,
+                alpha: 45
+            }
+        };
+    } else {
+        chartOptions = {
+            type: 'pie'
+        };
+    }
     const pieOptions = convertDataForPieChart(data);
-    const isDonut = values.chartType === 'donut';
-    const isHalfDonut = values.chartType === 'half-donut';
+    const isDonut = chartType === 'donut';
+    const isHalfDonut = chartType === 'half-donut';
     const plotOptions: any = {
         series: {
             allowPointSelect: true,
@@ -67,10 +88,8 @@ export const PieChart = <T extends Record<string, any>, X extends string, Y exte
         }
     }
     const pieObj = {
-        chart: {
-            type: 'pie'
-        },
-        colors: ['#0d181c', '#cadaea', '#9CAFAA', '#76ABAE', '#9BB0C1', '#7469B6', '#40679E'],
+        chart: chartOptions,
+        colors: values.colors,
         title: {
             text: values.chartTitle,
         },
@@ -85,6 +104,7 @@ export const PieChart = <T extends Record<string, any>, X extends string, Y exte
     };
     return {
         options: pieObj,
-        filters: []
+        filters: [],
+        is3D: is3d
     };
 };

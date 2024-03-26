@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { boolean, z } from "zod";
 export type ChartValues<X extends string, Y extends string, Prefix extends string> = {
     chartTitle: string;
     chartType: string;
@@ -12,7 +12,8 @@ export type ChartValues<X extends string, Y extends string, Prefix extends strin
 
 export type chartData = {
     options: Record<string, any>
-    filters: string[]
+    filters: string[],
+    is3D: boolean
 }
 
 
@@ -58,7 +59,8 @@ export interface DrawerCreateChartProps {
         columns: string[],
         pages: string,
         category: string,
-        prefix: string
+        prefix: string,
+        is3d: boolean
     ) => void;
     toggleDrawer: () => void;
     chartKey: string;

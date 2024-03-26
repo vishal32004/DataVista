@@ -5,21 +5,15 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
     values: ChartValues<X, Y, Prefix>,
     filter: boolean
 ) => {
-    if (values.chartType === 'pie' || values.chartType === 'donut' || values.chartType === 'half-donut') {
+    if (values.chartType === 'pie' || values.chartType === 'donut' || values.chartType === 'half-donut' || values.chartType === '3d-pie' || values.chartType === '3d-donut') {
         const options = PieChart(data, values);
         return options;
     }
 
     let xValues;
     if (filter) {
-        // const newXvalues = [];
         const parsedValue = JSON.parse(values.xValueKey)
-        console.log(parsedValue,"test bro")
-        // for (let i = 0; i < parsedValue.length; i++) {
-        //     newXvalues.push(values.xValueKey[i]);
-        // }
         xValues = parsedValue
-        console.log(xValues,'values ')
     } else {
         xValues = data.map((entry) => entry[values.xValueKey]);
     }
@@ -31,12 +25,31 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
         };
     });
 
-    const options = {
-        chart: {
-            type: values.chartType,
-        },
+    let chartType = values.chartType;
+    let chartOptions = {}
+    if (values.chartType.startsWith('stacked')) {
+        chartType = values.chartType.replace('stacked-', '');
+    }
 
-        colors: ['#0d181c', '#cadaea', '#9CAFAA', '#76ABAE', '#9BB0C1', '#7469B6', '#40679E'],
+    let is3d = false;
+    if (values.chartType.startsWith('3d')) {
+        chartType = values.chartType.replace('3d-', '');
+        is3d = true
+        chartOptions = {
+            type: chartType,
+            options3d: {
+                enabled: true,
+                alpha: 45
+            }
+        };
+    } else {
+        chartOptions = {
+            type: chartType
+        };
+    }
+    const options = {
+        chart: chartOptions,
+        colors: values.colors,
         title: {
             text: values.chartTitle,
             align: "left",
@@ -59,6 +72,7 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
         },
         plotOptions: {
             series: {
+                stacking: values.chartType.startsWith('stacked') ? 'normal' : null,
                 label: {
                     connectorAllowed: false,
                 },
@@ -89,7 +103,8 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
 
     const chartData: chartData = {
         options: options,
-        filters: xValues
+        filters: xValues,
+        is3D: is3d
     }
     return chartData;
 };
