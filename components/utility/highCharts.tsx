@@ -12,7 +12,6 @@ interface HighchartsUtilityProps {
 highcharts3d(Highcharts);
 cylinder(Highcharts);
 funnel(Highcharts);
-// pyramid(Highcharts);
 const HighchartsUtility: React.FC<HighchartsUtilityProps> = ({
   options,
   ...props

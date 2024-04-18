@@ -1,37 +1,29 @@
 import ChartCard from "../ChartCard";
-const Grid = () => {
+interface GridProps {
+  pagename: string;
+}
+const Grid: React.FC<GridProps> = ({ pagename }) => {
   return (
     <div className="h-screen">
       <div className="row m-3">
         <div className="col-6">
-          <ChartCard chartKey={"chart-1"} />
+          <ChartCard chartKey={"chart-1"} pagename={pagename}/>
         </div>
         <div className="col-6">
-          <ChartCard chartKey={"chart-2"} />
+          <ChartCard chartKey={"chart-2"} pagename={pagename}/>
         </div>
       </div>
       <div className="row m-3">
         <div className="col-12">
-          <ChartCard chartKey={"chart-3"} />
+          <ChartCard chartKey={"chart-3"} pagename={pagename}/>
         </div>
       </div>
       <div className="row m-3">
-        <div className="col-5">
-          <ChartCard chartKey={"chart-4"} />
+        <div className="col-6">
+          <ChartCard chartKey={"chart-4"} pagename={pagename}/>
         </div>
-        <div className="col-7">
-          <ChartCard chartKey={"chart-5"} />
-        </div>
-      </div>
-      <div className="row m-3">
-        <div className="col-md-4">
-          <ChartCard chartKey={"chart-6"} />
-        </div>
-        <div className="col-md-4">
-          <ChartCard chartKey={"chart-7"} />
-        </div>
-        <div className="col-md-4">
-          <ChartCard chartKey={"chart-8"} />
+        <div className="col-6">
+          <ChartCard chartKey={"chart-5"} pagename={pagename}/>
         </div>
       </div>
     </div>

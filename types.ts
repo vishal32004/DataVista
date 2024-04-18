@@ -23,7 +23,6 @@ export interface FilterOption {
 }
 
 // form schema
-
 export const formSchema = z
     .object({
         chartTitle: z.string().min(2).max(50),
@@ -51,6 +50,22 @@ export const formSchema = z
 
 
 
+
+export type Page = {
+    value: string;
+    label: string;
+};
+
+export interface ChartData {
+    chartjson: Record<string, any>,
+    charttype: string,
+    colors: string,
+    columnname: string,
+    groupby: string,
+    pagename: string,
+    prefix: string
+}
+
 export interface DrawerCreateChartProps {
     open: boolean;
     handleFilterAndCharts: (
@@ -64,8 +79,5 @@ export interface DrawerCreateChartProps {
     ) => void;
     toggleDrawer: () => void;
     chartKey: string;
+    existingChartData: ChartData | null;
 }
-export type Page = {
-    value: string;
-    label: string;
-};

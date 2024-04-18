@@ -1,4 +1,7 @@
 "use client";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import axios from "axios";
+import qs from "query-string";
 import { Drawer, Button, MultiSelect } from "@mantine/core";
 import { CreateChart } from "@/helpers/createChart";
 import { Select } from "@mantine/core";
@@ -13,9 +16,6 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import qs from "query-string";
 import { chartData, formSchema, DrawerCreateChartProps, Page } from "@/types";
 import { colorOptions, colorsArray } from "@/helpers/colors";
 
@@ -24,7 +24,83 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
   handleFilterAndCharts,
   toggleDrawer,
   chartKey,
+  existingChartData = null,
 }) => {
+  const [selectedPage, setSelectedPage] = useState<string | null>("");
+  const [pages, setPages] = useState<Page[]>([]);
+  const [colummn, setColummn] = useState<[{ value: string; label: string }]>([
+    { value: "", label: "" },
+  ]);
+  const [prefixGroup, setPrefixGroup] = useState([]);
+
+  const fetchPageNames = useCallback(async () => {
+    try {
+      const response = await axios.get("/api/page");
+      if (response.data) {
+        return response.data.map(
+          (el: { pageid: number; pagename: string }) => ({
+            value: el.pagename.toLowerCase(),
+            label: el.pagename.charAt(0).toUpperCase() + el.pagename.slice(1),
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching page names:", error);
+      return [];
+    }
+  }, []);
+
+  const fetchColumnsForPage = useCallback(async () => {
+    try {
+      const url = qs.stringifyUrl({
+        url: "/api/columns",
+        query: {
+          selectedPage: selectedPage,
+        },
+      });
+      const response = await axios.get(url);
+      const formattedColumns = response.data.map(
+        (column: { columnname: string }) => ({
+          label:
+            column.columnname.charAt(0).toUpperCase() +
+            column.columnname.slice(1),
+          value: column.columnname
+            .toLowerCase()
+            .replace(/\s+/g, "_")
+            .replace(/\//g, "_"),
+        })
+      );
+      const filteredColumns = formattedColumns.filter(
+        (column: { value: string }) => !["year", "month"].includes(column.value)
+      );
+      setColummn(filteredColumns);
+    } catch (error) {
+      console.error("Error fetching columns for page:", error);
+    }
+  }, [selectedPage]);
+
+  const fetchPrefix = useCallback(async () => {
+    try {
+      const url = qs.stringifyUrl({
+        url: "/api/getPrefix",
+        query: {
+          selectedPage: selectedPage,
+        },
+      });
+      const response = await axios.get(url);
+
+      const formattedPrefix = response.data.map(
+        (prefix: { prefix: string }) => ({
+          label: prefix.prefix.charAt(0).toUpperCase() + prefix.prefix.slice(1),
+          value: prefix.prefix.toLowerCase(),
+        })
+      );
+      setPrefixGroup(formattedPrefix);
+    } catch (error) {
+      console.error("Error fetching columns for page:", error);
+    }
+  }, [selectedPage]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,12 +113,27 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
     },
   });
 
-  const [pages, setPages] = useState<Page[]>([]);
-  const [selectedPage, setSelectedPage] = useState<string | null>("");
-  const [prefixGroup, setPrefixGroup] = useState([]);
-  const [colummn, setColummn] = useState<[{ value: string; label: string }]>([
-    { value: "", label: "" },
-  ]);
+  const pagesMemo = useMemo(() => {
+    return fetchPageNames();
+  }, [fetchPageNames]);
+
+  useEffect(() => {
+    pagesMemo.then((pages) => setPages(pages));
+  }, [pagesMemo]);
+
+  useEffect(() => {
+    if (selectedPage) {
+      fetchColumnsForPage()
+        .then(() => {
+          fetchPrefix();
+        })
+        .catch((error) => {
+          console.error("Error fetching columns for page:", error);
+        });
+    }
+  }, [selectedPage, fetchColumnsForPage, fetchPrefix]);
+
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const res = await axios.get("/api/data", {
@@ -78,108 +169,63 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         chartData.is3D
       );
       toggleDrawer();
+      // saveChart(
+      //   chartData.options,
+      //   selectedPage,
+      //   values.columns,
+      //   values.category,
+      //   values.prefix,
+      //   values.colors,
+      //   values.chartType
+      // );
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   }
 
-  useEffect(() => {
-    const fetchPageNames = async () => {
-      try {
-        const response = await axios.get("/api/page");
-        if (response.data) {
-          const pages = response.data.map(
-            (el: { pageid: number; pagename: string }) => ({
-              value: el.pagename.toLowerCase(),
-              label: el.pagename.charAt(0).toUpperCase() + el.pagename.slice(1),
-            })
-          );
-          setPages(pages);
-        }
-      } catch (error) {
-        console.error("Error fetching page names:", error);
-      }
+  const saveChart = async (
+    newJson: Record<string, any>,
+    selectedPage: string | null,
+    columns: string[],
+    prefix: string,
+    category: string,
+    colors: string,
+    chartType: string
+  ) => {
+    const data = {
+      json: JSON.stringify(newJson),
+      chartKey,
+      selectedPage,
+      columns,
+      prefix,
+      groupBy: category,
+      colors,
+      chartType,
     };
-
-    fetchPageNames();
-  }, []);
+    try {
+      const res = await axios.post("/api/charts/saveChart", data);
+    } catch (error) {
+      console.log(error, "error saving the chart");
+    }
+  };
 
   useEffect(() => {
-    if (selectedPage) {
-      const fetchColumnsForPage = async () => {
-        try {
-          const url = qs.stringifyUrl({
-            url: "/api/columns",
-            query: {
-              selectedPage: selectedPage,
-            },
-          });
-          const response = await axios.get(url);
-          const formattedColumns = response.data.map(
-            (column: { columnname: string }) => ({
-              label:
-                column.columnname.charAt(0).toUpperCase() +
-                column.columnname.slice(1),
-              value: column.columnname
-                .toLowerCase()
-                .replace(/\s+/g, "_")
-                .replace(/\//g, "_"),
-            })
-          );
-          const filteredColumns = formattedColumns.filter(
-            (column: { value: string }) =>
-              !["year", "month"].includes(column.value)
-          );
-          setColummn(filteredColumns);
-        } catch (error) {
-          console.error("Error fetching columns for page:", error);
-        }
-      };
-
-      fetchColumnsForPage();
+    console.log(existingChartData, "jsdhfsdfkd");
+    if (existingChartData !== null) {
+      const columns: string[] = JSON.parse(existingChartData.columnname);
+      form.setValue("chartTitle", existingChartData.chartjson.title.text);
+      form.setValue("chartType", existingChartData.charttype);
+      form.setValue("chartXAxis", existingChartData.chartjson.xAxis.title.text);
+      form.setValue("chartYAxis", existingChartData.chartjson.yAxis.title.text);
+        form.setValue("pages", existingChartData.pagename);
+        setSelectedPage(existingChartData.pagename)
+      form.setValue("columns", columns);
+      form.setValue("prefix", existingChartData.prefix);
+      form.setValue("category", existingChartData.groupby);
+      form.setValue("colors", existingChartData.colors);
     }
-  }, [selectedPage]);
+  }, [existingChartData, form]);
 
-  useEffect(() => {
-    if (selectedPage) {
-      const fetchPrefix = async () => {
-        try {
-          const url = qs.stringifyUrl({
-            url: "/api/getPrefix",
-            query: {
-              selectedPage: selectedPage,
-            },
-          });
-          const response = await axios.get(url);
-
-          const formatedPrefix = response.data.map(
-            (prefix: { prefix: string }) => ({
-              label:
-                prefix.prefix.charAt(0).toUpperCase() + prefix.prefix.slice(1),
-              value: prefix.prefix.toLowerCase(),
-            })
-          );
-          setPrefixGroup(formatedPrefix);
-        } catch (error) {
-          console.error("Error fetching columns for page:", error);
-        }
-      };
-
-      fetchPrefix();
-    }
-  }, [selectedPage]);
-
-  // const saveChart = async (newJson: Record<string, any>) => {
-  //   const data = {
-  //     json: JSON.stringify(newJson),
-  //     chartKey,
-  //   };
-  //   try {
-  //     const res = await axios.post("/api/charts/saveChart", data);
-  //   } catch (error) {
-  //     console.log(error, "error saving the chart");
-  //   }
-  // };
   return (
     <>
       <Drawer
@@ -382,7 +428,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-white">
-                    Group By
+                    Select Colors
                   </FormLabel>
                   <Select
                     data={colorOptions}
@@ -399,7 +445,7 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
 
             <div className="mt-4">
               <p className="text-sm font-bold text-zinc-500 dark:text-white mb-2">
-                Color Array Preview:
+                Color Preview:
               </p>
               <div className="flex">
                 {form.watch("colors") !== undefined &&

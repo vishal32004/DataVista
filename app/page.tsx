@@ -44,25 +44,25 @@ const Home = () => {
       </TabsList>
       {tabsButton.map((tab, index) => (
         <TabsContent key={index} value={tab.pagename}>
-          {renderGrid(tab.grid)}
+          {renderGrid(tab.grid, tab.pagename)}
         </TabsContent>
       ))}
     </Tabs>
   );
 };
 
-const renderGrid = (grid: string) => {
+const renderGrid = (grid: string, pagename: string) => {
   switch (grid) {
     case "1":
-      return <Grid />;
+      return <Grid pagename={pagename} />;
     case "2":
-      return <Grid2 />;
+      return <Grid2 pagename={pagename} />;
     case "3":
-      return <Grid3 />;
+      return <Grid3 pagename={pagename} />;
     case "4":
-      return <Grid4 />;
+      return <Grid4 pagename={pagename} />;
     case "5":
-      return <Grid5 />;
+      return <Grid5 pagename={pagename} />;
     default:
       return null;
   }

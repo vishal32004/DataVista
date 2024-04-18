@@ -17,6 +17,7 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
     } else {
         xValues = data.map((entry) => entry[values.xValueKey]);
     }
+
     const seriesData = values.yValueKeys.map((key) => {
         const newKey = values.prefix + '_' + key
         return {
@@ -24,6 +25,8 @@ export const CreateChart = <T extends Record<string, any>, X extends string, Y e
             data: data.map((entry) => parseInt(entry[newKey].toString())),
         };
     });
+
+    console.log("function")
 
     let chartType = values.chartType;
     let chartOptions = {}

@@ -1,47 +1,50 @@
 import React from "react";
 import ChartCard from "../ChartCard";
 
-const Grid5 = () => {
+interface GridProps {
+  pagename: string;
+}
+const Grid5: React.FC<GridProps> = ({ pagename }) => {
   return (
     <div>
       <div className="h-screen">
         <div className="row m-3">
           <div className="col-6">
-            <ChartCard chartKey={"chart-1"} />
+            <ChartCard chartKey={"chart-1"} pagename={pagename}/>
           </div>
           <div className="col-6">
-            <ChartCard chartKey={"chart-2"} />
+            <ChartCard chartKey={"chart-2"} pagename={pagename}/>
           </div>
         </div>
         <div className="row m-3">
           <div className="col-12">
-            <ChartCard chartKey={"chart-3"} />
+            <ChartCard chartKey={"chart-3"} pagename={pagename}/>
           </div>
         </div>
         <div className="row m-3">
           <div className="col-6">
-            <ChartCard chartKey={"chart-4"} />
+            <ChartCard chartKey={"chart-4"} pagename={pagename}/>
           </div>
           <div className="col-6">
-            <ChartCard chartKey={"chart-5"} />
-          </div>
-        </div>
-        <div className="row m-3">
-          <div className="col-12">
-            <ChartCard chartKey={"chart-6"} />
-          </div>
-        </div>
-        <div className="row m-3">
-          <div className="col-6">
-            <ChartCard chartKey={"chart-7"} />
-          </div>
-          <div className="col-6">
-            <ChartCard chartKey={"chart-8"} />
+            <ChartCard chartKey={"chart-5"} pagename={pagename}/>
           </div>
         </div>
         <div className="row m-3">
           <div className="col-12">
-            <ChartCard chartKey={"chart-9"} />
+            <ChartCard chartKey={"chart-6"} pagename={pagename}/>
+          </div>
+        </div>
+        <div className="row m-3">
+          <div className="col-6">
+            <ChartCard chartKey={"chart-7"} pagename={pagename}/>
+          </div>
+          <div className="col-6">
+            <ChartCard chartKey={"chart-8"} pagename={pagename}/>
+          </div>
+        </div>
+        <div className="row m-3">
+          <div className="col-12">
+            <ChartCard chartKey={"chart-9"} pagename={pagename}/>
           </div>
         </div>
       </div>
