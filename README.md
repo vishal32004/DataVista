@@ -1,7 +1,7 @@
-# Analytic Project
+# DataVista
 
 ## Overview
-Analytic is a web-based application designed to provide visual representations of data in various chart formats. It offers a user-friendly interface for creating, editing, and managing charts across different categories. With Analytic, users can generate insightful charts to analyze and interpret their data effectively.
+DataVista is a web-based application designed to provide visual representations of data in various chart formats. It offers a user-friendly interface for creating, editing, and managing charts across different categories. With Analytic, users can generate insightful charts to analyze and interpret their data effectively.
 
 ## Features
 - Visual representation of data in charts
@@ -34,7 +34,7 @@ Analytic is a web-based application designed to provide visual representations o
 - **Multiple Tabs**: Users can maintain data across different tables or categories by using multiple tabs.
 
 ## Authentication
-Analytic utilizes user authentication provided by clerk.com to ensure secure access to the application.
+DataVista utilizes user authentication provided by clerk.com to ensure secure access to the application.
 
 ## Requirements
 - Web browser
