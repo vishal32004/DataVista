@@ -169,15 +169,15 @@ export const DrawerCreateChart: React.FC<DrawerCreateChartProps> = ({
         chartData.is3D
       );
       toggleDrawer();
-      // saveChart(
-      //   chartData.options,
-      //   selectedPage,
-      //   values.columns,
-      //   values.category,
-      //   values.prefix,
-      //   values.colors,
-      //   values.chartType
-      // );
+      saveChart(
+        chartData.options,
+        selectedPage,
+        values.columns,
+        values.category,
+        values.prefix,
+        values.colors,
+        values.chartType
+      );
     } catch (error) {
       console.error("Error submitting form:", error);
     }
