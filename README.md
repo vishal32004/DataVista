@@ -49,6 +49,3 @@ DataVista utilizes user authentication provided by clerk.com to ensure secure ac
 ## Acknowledgments
 - Special thanks to clerk.com for providing user authentication services.
 - Highcharts for providing charting functionalities.
-
-## Support
-For any issues or inquiries, please contact [insert contact information].
